@@ -1,0 +1,10 @@
+# Terraform / OpenTofu
+.terraform/
+.terraform.lock.hcl
+*.tfvars
+*.tfstate
+*.tfstate.*
+
+# Misc
+.DS_Store
+ssh/

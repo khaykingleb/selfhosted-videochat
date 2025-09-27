@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cert-manager
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://github.com/khaykingleb/selfhosted-videochat.git
+      targetRevision: backbone # TODO: HEAD
+      ref: infra
+    - repoURL: https://charts.jetstack.io
+      targetRevision: v1.18.2
+      chart: cert-manager
+      helm:
+        valueFiles:
+          - $infra/charts/cert-manager/values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cert-manager
+  syncPolicy:
+    automated:
+      enabled: true
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

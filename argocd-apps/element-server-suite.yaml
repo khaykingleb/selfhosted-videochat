@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ess
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://github.com/khaykingleb/selfhosted-videochat.git
+      targetRevision: backbone # TODO: HEAD
+      ref: infra
+    - repoURL: https://charts.element.io
+      targetRevision: 25.8.3
+      chart: ess
+      helm:
+        valueFiles:
+          - $infra/charts/ess/values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ess
+  syncPolicy:
+    automated:
+      enabled: true
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

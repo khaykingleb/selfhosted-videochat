@@ -1,0 +1,15 @@
+certManager:
+  clusterIssuer: letsencrypt-prod
+elementWeb:
+  ingress:
+    host: chat.videochat.khaykingleb.com
+matrixAuthenticationService:
+  ingress:
+    host: account.videochat.khaykingleb.com
+matrixRTC:
+  ingress:
+    host: mrtc.videochat.khaykingleb.com
+serverName: videochat.khaykingleb.com
+synapse:
+  ingress:
+    host: matrix.videochat.khaykingleb.com

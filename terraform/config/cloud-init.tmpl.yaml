@@ -1,0 +1,56 @@
+#cloud-config
+package_update: true
+packages:
+  - curl
+  - ca-certificates
+
+write_files:
+  - path: /usr/local/bin/k3s-single-node-install.sh
+    permissions: '0755'
+    content: |
+      #!/bin/bash
+      echo "Installing K3s ${k3s_version}..."
+      curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v${k3s_version}" sh -s -
+      until sudo kubectl get node "${node_name}" -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}' | grep -q "True"; do
+        echo "Waiting..."
+        sleep 1
+      done
+
+  - path: /usr/local/bin/argocd-install.sh
+    permissions: '0755'
+    content: |
+      #!/bin/bash
+      echo "Installing ArgoCD..."
+      kubectl create namespace argocd
+      kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v${argocd_version}/manifests/install.yaml
+      kubectl wait --for=condition=Established crd/applications.argoproj.io --timeout=180s
+
+      echo "Bootstrapping ArgoCD app-of-apps..."
+      cat >/tmp/app-of-apps.yaml <<EOF
+      apiVersion: argoproj.io/v1alpha1
+      kind: Application
+      metadata:
+        name: argocd-apps
+        namespace: argocd
+      spec:
+        destination:
+          namespace: argocd
+          server: https://kubernetes.default.svc
+        project: default
+        source:
+          path: ${argocd_repo_path}
+          repoURL: ${argocd_repo_url}
+          targetRevision: ${argocd_repo_target_revision}
+        syncPolicy:
+          automated:
+            enabled: true
+            prune: true
+            selfHeal: true
+          syncOptions:
+          - CreateNamespace=true
+      EOF
+      kubectl apply -n argocd -f /tmp/app-of-apps.yaml
+
+runcmd:
+  - /usr/local/bin/k3s-single-node-install.sh
+  - /usr/local/bin/argocd-install.sh
