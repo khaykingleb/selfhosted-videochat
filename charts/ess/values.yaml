@@ -1,15 +1,26 @@
+serverName: videochat.khaykingleb.com
 certManager:
   clusterIssuer: letsencrypt-prod
 elementWeb:
   ingress:
     host: chat.videochat.khaykingleb.com
+    class: traefik
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
 matrixAuthenticationService:
   ingress:
     host: account.videochat.khaykingleb.com
+    class: traefik
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
 matrixRTC:
   ingress:
     host: mrtc.videochat.khaykingleb.com
-serverName: videochat.khaykingleb.com
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
 synapse:
   ingress:
     host: matrix.videochat.khaykingleb.com
+    class: traefik
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
