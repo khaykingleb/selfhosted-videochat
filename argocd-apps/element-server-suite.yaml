@@ -9,9 +9,9 @@ spec:
     - repoURL: https://github.com/khaykingleb/selfhosted-videochat.git
       targetRevision: backbone # TODO: HEAD
       ref: infra
-    - repoURL: https://charts.element.io
-      targetRevision: 25.8.3
-      chart: ess
+    - repoURL: oci://ghcr.io/element-hq/ess-helm
+      targetRevision: 25.9.3
+      chart: matrix-stack
       helm:
         valueFiles:
           - $infra/charts/ess/values.yaml
